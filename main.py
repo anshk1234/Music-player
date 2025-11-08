@@ -137,7 +137,7 @@ It supports live playback from links and is designed for demo purposes.
 
 **Features:**
 - search and play songs which stream directly from YouTube.
-- Fully adds free and open-source.                    
+- No Adds and open-source.                    
 - More features coming soon...                                         
 
 **Credits:**  
@@ -153,4 +153,5 @@ It supports live playback from links and is designed for demo purposes.
 
 # ---- Footer ----
 st.markdown("<p style='text-align:center; color:white;'>© 2025 Music App | Powered by Youtube Streaming</p>", unsafe_allow_html=True)
+
 
