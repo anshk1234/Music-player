@@ -112,7 +112,8 @@ if query:
                 ydl_opts_audio = {
                     'format': 'bestaudio/best',
                     'quiet': True,
-                    'noplaylist': True,
+                    'nocheckcertificate': True,
+                    'cookies': 'cookies.txt'
                 }
                 with YoutubeDL(ydl_opts_audio) as ydl:
                     info = ydl.extract_info(video['url'], download=False)
@@ -153,6 +154,7 @@ It supports live playback from links and is designed for demo purposes.
 
 # ---- Footer ----
 st.markdown("<p style='text-align:center; color:white;'>© 2025 Music App | Powered by Youtube Streaming</p>", unsafe_allow_html=True)
+
 
 
 
