@@ -137,14 +137,14 @@ It supports live playback from links and is designed for demo purposes.
 
 **Features:**
 - search and play songs which stream directly from YouTube.
-- Fully adds free and open-source.                    
+- No Ads and open-source.                    
 - More features coming soon...                                         
 
 **Credits:**  
 - 👨‍💻 Developed and Designed by: Ansh Kunwar   
 - ⚙️ Built with: Streamlit + yt-dlp
 - 🖼️ Animation by: LottieFiles
-- 🧠 [Source Code]()
+- 🧠 [App Source Code](https://github.com/anshk1234/Music-player)
 - 📧 contact: anshkunwar3009@gmail.com                  
 - 🌐 see other projects: [streamlit.io/ansh kunwar](https://share.streamlit.io/user/anshk1234)
                     
@@ -153,3 +153,5 @@ It supports live playback from links and is designed for demo purposes.
 
 # ---- Footer ----
 st.markdown("<p style='text-align:center; color:white;'>© 2025 Music App | Powered by Youtube Streaming</p>", unsafe_allow_html=True)
+
+
