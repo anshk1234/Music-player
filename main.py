@@ -86,46 +86,80 @@ set_local_background("wallpaper.jpg")
 # app title
 st.title("🎵 Music app (Live Streaming)")
 # Search box
+# ------- Search & Play Section -------- #
+
 query = st.text_input("Search for a song:", "")
 
 if query:
-    st.info("Searching on YouTube...")
+    st.info("🔍 Searching YouTube...")
 
-    # Search top 5 results using yt-dlp
+    # Search top 5 results
     ydl_opts_search = {
         'quiet': True,
         'skip_download': True,
-        'extract_flat': True,  # Only get info, no download
+        'extract_flat': True,  # only metadata
     }
-    with YoutubeDL(ydl_opts_search) as ydl:
-        search_results = ydl.extract_info(f"ytsearch5:{query}", download=False)['entries']
 
-    if search_results:
-        st.subheader("Results:")
-        for i, video in enumerate(search_results):
-            st.write(f"{i+1}. {video['title']}")
+    try:
+        with YoutubeDL(ydl_opts_search) as ydl:
+            results = ydl.extract_info(f"ytsearch5:{query}", download=False)['entries']
+    except Exception:
+        results = None
 
-            if st.button(f"Play '{video['title']}'", key=f"play{i}"):
-                st.info("Fetching live audio stream...")
+    if results:
+        st.subheader("🎶 Search Results")
 
-                # Extract the direct audio URL
-                ydl_opts_audio = {
+        for i, video in enumerate(results):
+            title = video.get("title", "Unknown Title")
+            st.markdown(f"**{i+1}. {title}**")
+
+            # Play button
+            if st.button(f"▶️ Play", key=f"play-btn-{i}"):
+                st.info(f"🎧 Loading: {title}")
+
+                # Fetch streaming audio URL
+                ydl_opts_stream = {
                     'format': 'bestaudio/best',
                     'quiet': True,
-                    'nocheckcertificate': True,
-                    'cookies': 'cookies.txt'
+                    'noplaylist': True,
                 }
-                with YoutubeDL(ydl_opts_audio) as ydl:
-                    info = ydl.extract_info(video['url'], download=False)
-                    audio_url = info['url']  # Direct streaming URL
 
-                # Play the audio directly from URL
-                st.audio(audio_url)
+                try:
+                    with YoutubeDL(ydl_opts_stream) as ydl:
+                        info = ydl.extract_info(video['url'], download=False)
 
-                # Optional: provide the original YouTube link to open in browser
-                st.markdown(f"[Open on YouTube]({video['url']})")
+                    formats = info.get('formats', [])
+                    audio_url = None
+
+                    # Priority: WEBM audio
+                    for f in formats:
+                        if f.get("acodec") != "none" and "audio/webm" in (f.get("mime_type") or ""):
+                            audio_url = f['url']
+                            break
+
+                    # Backup: ANY audio stream available
+                    if not audio_url:
+                        for f in formats:
+                            if f.get("acodec") != "none":
+                                audio_url = f['url']
+                                break
+
+                    if audio_url:
+                        st.success("▶️ Now Playing")
+                        st.audio(audio_url)
+                    else:
+                        st.error("⚠️ This song cannot be streamed directly. Try another one.")
+
+                except Exception as e:
+                    st.error("⚠️ Protected video — Sign-in required. Choose another track.")
+                    st.write(str(e))
+
+                # Optional YouTube link
+                st.markdown(f"🔗 [Open on YouTube]({video['url']})")
+
     else:
-        st.warning("No results found.")
+        st.warning("😕 No videos found. Try a simpler search.")
+
 
 with st.sidebar:
 
@@ -154,6 +188,7 @@ It supports live playback from links and is designed for demo purposes.
 
 # ---- Footer ----
 st.markdown("<p style='text-align:center; color:white;'>© 2025 Music App | Powered by Youtube Streaming</p>", unsafe_allow_html=True)
+
 
 
 
