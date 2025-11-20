@@ -86,79 +86,45 @@ set_local_background("wallpaper.jpg")
 # app title
 st.title("🎵 Music app (Live Streaming)")
 # Search box
-# ------- Search & Play Section -------- #
-
 query = st.text_input("Search for a song:", "")
 
 if query:
-    st.info("🔍 Searching YouTube...")
+    st.info("Searching on YouTube...")
 
-    # Search top 5 results
+    # Search top 5 results using yt-dlp
     ydl_opts_search = {
         'quiet': True,
         'skip_download': True,
-        'extract_flat': True,
+        'extract_flat': True,  # Only get info, no download
     }
+    with YoutubeDL(ydl_opts_search) as ydl:
+        search_results = ydl.extract_info(f"ytsearch5:{query}", download=False)['entries']
 
-    try:
-        with YoutubeDL(ydl_opts_search) as ydl:
-            results = ydl.extract_info(f"ytsearch5:{query}", download=False)['entries']
-    except Exception:
-        results = None
+    if search_results:
+        st.subheader("Results:")
+        for i, video in enumerate(search_results):
+            st.write(f"{i+1}. {video['title']}")
 
-    if results:
-        st.subheader("🎶 Search Results")
+            if st.button(f"Play '{video['title']}'", key=f"play{i}"):
+                st.info("Fetching live audio stream...")
 
-        for i, video in enumerate(results):
-            title = video.get('title', 'Unknown Title')
-            st.markdown(f"**{i+1}. {title}**")
-
-            # Button for each result
-            if st.button(f"Play '{title}'", key=f"play_{i}"):
-
-                st.info(f"🎧 Fetching: {title}")
-
-                ydl_opts_stream = {
+                # Extract the direct audio URL
+                ydl_opts_audio = {
                     'format': 'bestaudio/best',
                     'quiet': True,
                     'noplaylist': True,
-                    'cookies': 'cookies.txt',
                 }
+                with YoutubeDL(ydl_opts_audio) as ydl:
+                    info = ydl.extract_info(video['url'], download=False)
+                    audio_url = info['url']  # Direct streaming URL
 
-                try:
-                    with YoutubeDL(ydl_opts_stream) as ydl:
-                        info = ydl.extract_info(video['url'], download=False)
+                # Play the audio directly from URL
+                st.audio(audio_url)
 
-                    formats = info.get("formats", [])
-                    audio_url = None
-
-                    # Preferred: audio/webm
-                    for f in formats:
-                        if f.get("acodec") != "none" and "audio/webm" in (f.get("mime_type") or ""):
-                            audio_url = f["url"]
-                            break
-
-                    # Fallback format
-                    if not audio_url:
-                        for f in formats:
-                            if f.get("acodec") != "none":
-                                audio_url = f["url"]
-                                break
-
-                    if audio_url:
-                        st.success("▶️ Now Streaming")
-                        st.audio(audio_url)
-                    else:
-                        st.warning("⚠️ Audio format unavailable for this video")
-
-                except Exception as e:
-                    st.error("❌ Login/age-restricted video — cannot stream")
-                    st.write(e)
-                
-                st.markdown(f"🔗 [Open on YouTube]({video['url']})")
-
+                # Optional: provide the original YouTube link to open in browser
+                st.markdown(f"[Open on YouTube]({video['url']})")
     else:
-        st.warning("No results found")
+        st.warning("No results found.")
 
 with st.sidebar:
 
@@ -171,14 +137,14 @@ It supports live playback from links and is designed for demo purposes.
 
 **Features:**
 - search and play songs which stream directly from YouTube.
-- No Ads and open-source.                    
+- Fully adds free and open-source.                    
 - More features coming soon...                                         
 
 **Credits:**  
 - 👨‍💻 Developed and Designed by: Ansh Kunwar   
 - ⚙️ Built with: Streamlit + yt-dlp
 - 🖼️ Animation by: LottieFiles
-- 🧠 [App Source Code](https://github.com/anshk1234/Music-player)
+- 🧠 [Source Code]()
 - 📧 contact: anshkunwar3009@gmail.com                  
 - 🌐 see other projects: [streamlit.io/ansh kunwar](https://share.streamlit.io/user/anshk1234)
                     
@@ -187,10 +153,3 @@ It supports live playback from links and is designed for demo purposes.
 
 # ---- Footer ----
 st.markdown("<p style='text-align:center; color:white;'>© 2025 Music App | Powered by Youtube Streaming</p>", unsafe_allow_html=True)
-
-
-
-
-
-
-
