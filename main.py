@@ -97,7 +97,7 @@ if query:
     ydl_opts_search = {
         'quiet': True,
         'skip_download': True,
-        'extract_flat': True,  # only metadata
+        'extract_flat': True,
     }
 
     try:
@@ -110,14 +110,14 @@ if query:
         st.subheader("🎶 Search Results")
 
         for i, video in enumerate(results):
-            title = video.get("title", "Unknown Title")
+            title = video.get('title', 'Unknown Title')
             st.markdown(f"**{i+1}. {title}**")
 
-            # Play button
-            if st.button(f"▶️ Play", key=f"play-btn-{i}"):
-                st.info(f"🎧 Loading: {title}")
+            # Button for each result
+            if st.button(f"Play '{title}'", key=f"play_{i}"):
 
-                # Fetch streaming audio URL
+                st.info(f"🎧 Fetching: {title}")
+
                 ydl_opts_stream = {
                     'format': 'bestaudio/best',
                     'quiet': True,
@@ -129,38 +129,36 @@ if query:
                     with YoutubeDL(ydl_opts_stream) as ydl:
                         info = ydl.extract_info(video['url'], download=False)
 
-                    formats = info.get('formats', [])
+                    formats = info.get("formats", [])
                     audio_url = None
 
-                    # Priority: WEBM audio
+                    # Preferred: audio/webm
                     for f in formats:
                         if f.get("acodec") != "none" and "audio/webm" in (f.get("mime_type") or ""):
-                            audio_url = f['url']
+                            audio_url = f["url"]
                             break
 
-                    # Backup: ANY audio stream available
+                    # Fallback format
                     if not audio_url:
                         for f in formats:
                             if f.get("acodec") != "none":
-                                audio_url = f['url']
+                                audio_url = f["url"]
                                 break
 
                     if audio_url:
-                        st.success("▶️ Now Playing")
+                        st.success("▶️ Now Streaming")
                         st.audio(audio_url)
                     else:
-                        st.error("⚠️ This song cannot be streamed directly. Try another one.")
+                        st.warning("⚠️ Audio format unavailable for this video")
 
                 except Exception as e:
-                    st.error("⚠️ Protected video — Sign-in required. Choose another track.")
-                    st.write(str(e))
-
-                # Optional YouTube link
+                    st.error("❌ Login/age-restricted video — cannot stream")
+                    st.write(e)
+                
                 st.markdown(f"🔗 [Open on YouTube]({video['url']})")
 
     else:
-        st.warning("😕 No videos found. Try a simpler search.")
-
+        st.warning("No results found")
 
 with st.sidebar:
 
@@ -189,6 +187,7 @@ It supports live playback from links and is designed for demo purposes.
 
 # ---- Footer ----
 st.markdown("<p style='text-align:center; color:white;'>© 2025 Music App | Powered by Youtube Streaming</p>", unsafe_allow_html=True)
+
 
 
 
