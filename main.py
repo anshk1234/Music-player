@@ -122,6 +122,7 @@ if query:
                     'format': 'bestaudio/best',
                     'quiet': True,
                     'noplaylist': True,
+                    'cookies': 'cookies.txt',
                 }
 
                 try:
@@ -188,6 +189,7 @@ It supports live playback from links and is designed for demo purposes.
 
 # ---- Footer ----
 st.markdown("<p style='text-align:center; color:white;'>© 2025 Music App | Powered by Youtube Streaming</p>", unsafe_allow_html=True)
+
 
 
 
