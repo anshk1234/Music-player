@@ -28,6 +28,7 @@ def set_local_background(image_file):
     .css-1d391kg, .css-18ni7ap {{
         background: transparent !important;
     }}
+set_local_background("wallpaper.jpg")
 
 # app title
 st.title("🎵 Music app (Live Streaming)")
