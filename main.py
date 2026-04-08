@@ -1,12 +1,33 @@
 # music_player_live.py
 import streamlit as st
 from yt_dlp import YoutubeDL
+import base64
 
 # ---- Page Configuration ----
 st.set_page_config(page_title=" Music Player ", page_icon="🎵")
 
 
-
+# ---- Set Background & Neon Sidebar ----
+def set_local_background(image_file):
+    with open(image_file, "rb") as img:
+        encoded = base64.b64encode(img.read()).decode()
+    css = f"""
+    <style>
+    html, body, .stApp {{
+        background-image: url("data:image/jpg;base64,{encoded}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: center;
+    }}
+    [data-testid="stAppViewContainer"],
+    [data-testid="stHeader"],
+    [data-testid="stToolbar"],
+    [data-testid="stVerticalBlock"],
+    .main, .block-container,
+    .css-1d391kg, .css-18ni7ap {{
+        background: transparent !important;
+    }}
 
 # app title
 st.title("🎵 Music app (Live Streaming)")
